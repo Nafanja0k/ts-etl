@@ -13,10 +13,53 @@ import {
 } from "lucide-react";
 
 export const CodeViewer: React.FC = () => {
-  const [selectedFile, setSelectedFile] = useState<string>("main.py");
+  const [selectedFile, setSelectedFile] = useState<string>("README.md");
   const [copied, setCopied] = useState<boolean>(false);
 
   const fileContents: Record<string, { label: string; lang: string; type: string; content: string }> = {
+    "README.md": {
+      label: "README.md",
+      lang: "markdown",
+      type: "Architecture & Deploy Guide",
+      content: `# Nobl9-Inspired Stateless Telemetry ETL & Backfill Engine
+
+An enterprise-grade, stateless, pull-based Telemetry ETL & Backfill Engine designed for serverless containers (Kubernetes CronJobs, AWS ECS Fargate, GCP Cloud Run). Inspired by the Nobl9 Agent pull model, this engine executes scheduled ephemeral runs without requiring persistent database infrastructure.
+
+## Key Capabilities
+1. S3 Atomic Distributed Lease Lock (IfNoneMatch: * with TTL)
+2. Nobl9 Safe Horizon (t_safe = t_now - query_delay)
+3. Monotonic Low-Watermarks & Half-Open Interval Slicing [t_start, t_end)
+4. Ingestion Push-Down Downsampling (Prometheus, Splunk, Graphite)
+5. In-Memory Cardinality Governance (>95% series index reduction)
+6. Prometheus Remote-Write Exporter (Protobuf + Snappy wire format)
+
+## Quickstart & CLI Execution
+\`\`\`bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Run unit & integration test suite
+python3 tests/test_etl.py
+
+# 3. Dry-run extraction & normalization
+python3 main.py --dry-run
+
+# 4. Trigger historical backfill
+python3 main.py --job http_service_slo_telemetry --backfill-start 2026-08-01T00:00:00Z
+\`\`\`
+
+## Build & Deployment Commands
+\`\`\`bash
+# Docker OCI Image Build
+docker build -t telemetry-etl:v1.0.0 .
+
+# Kubernetes CronJob Deployment
+kubectl apply -f k8s/cronjob.yaml -n observability
+
+# Docker Compose Local Stack with VictoriaMetrics
+docker-compose up --build
+\`\`\``,
+    },
     "main.py": {
       label: "main.py",
       lang: "python",
