@@ -1,0 +1,40 @@
+source_id: "infra_k8s_prometheus"
+source_type: "prometheus"
+description: "Map raw Kubernetes cAdvisor / Node Exporter Prometheus series to canonical metrics"
+rules:
+  - source_metric: "node_cpu_seconds_total"
+    target_metric: "system.cpu.utilization"
+    query_template: 'sum(rate(node_cpu_seconds_total{mode!="idle"}[{step}])) by (instance, app, env, region)'
+    dimension_mappings:
+      instance: "host.name"
+      app: "service.name"
+      env: "deployment.environment"
+      region: "cloud.region"
+    static_dimensions:
+      "source.system": "prometheus-k8s"
+    drop_tags:
+      - "job"
+      - "pod_uuid"
+      - "container_id"
+      - "ip"
+      - "node_revision"
+    unit_conversion:
+      operation: "none"
+      multiplier: 1.0
+
+  - source_metric: "container_cpu_usage_seconds_total"
+    target_metric: "system.cpu.utilization"
+    query_template: 'sum(rate(container_cpu_usage_seconds_total{container!=""}[{step}])) by (node, service, env)'
+    dimension_mappings:
+      node: "host.name"
+      service: "service.name"
+      env: "deployment.environment"
+    static_dimensions:
+      "source.system": "cadvisor"
+    drop_tags:
+      - "id"
+      - "image"
+      - "pod"
+      - "container_id"
+    unit_conversion:
+      operation: "none"

@@ -1,0 +1,55 @@
+version: "1.0"
+target_standards:
+  system.cpu.utilization:
+    type: "gauge"
+    unit: "ratio"
+    description: "Normalized CPU utilization across hosts and containers (0.0 to 1.0)"
+    allowed_resolutions: ["1m", "5m", "15m", "1h"]
+    required_dimensions:
+      - "host.name"
+      - "service.name"
+      - "deployment.environment"
+    optional_dimensions:
+      - "cloud.region"
+      - "cloud.availability_zone"
+      - "k8s.cluster.name"
+    forbidden_dimensions:
+      - "pod_uuid"
+      - "pod_ip"
+      - "container_id"
+      - "ephemeral_port"
+
+  http.server.requests:
+    type: "counter"
+    unit: "requests"
+    description: "Cumulative incoming HTTP requests by route and status code"
+    allowed_resolutions: ["1m", "5m", "15m", "1h"]
+    required_dimensions:
+      - "http.response.status_code"
+      - "http.route"
+      - "service.name"
+      - "deployment.environment"
+    optional_dimensions:
+      - "http.request.method"
+      - "server.address"
+    forbidden_dimensions:
+      - "client_ip"
+      - "request_id"
+      - "session_id"
+      - "trace_id"
+
+  system.memory.utilization:
+    type: "gauge"
+    unit: "ratio"
+    description: "System physical memory consumption normalized as ratio (0.0 to 1.0)"
+    allowed_resolutions: ["1m", "2m", "5m", "15m"]
+    required_dimensions:
+      - "host.name"
+      - "service.name"
+      - "deployment.environment"
+    optional_dimensions:
+      - "memory.type"
+      - "cloud.region"
+    forbidden_dimensions:
+      - "process_pid"
+      - "thread_id"

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  telemetry-etl-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=mock_access_key
+      - AWS_SECRET_ACCESS_KEY=mock_secret_key
+      - S3_BUCKET=telemetry-etl-state
+      - SPLUNK_ACCESS_TOKEN=mock-splunk-token
+      - TARGET_TSDB_URL=http://victoriametrics:8428/api/v1/write
+    command: ["--s3-bucket", "telemetry-etl-state", "--target-tsdb", "http://victoriametrics:8428/api/v1/write"]
+    depends_on:
+      - victoriametrics
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    ports:
+      - "8428:8428"
+    command:
+      - "--retentionPeriod=1"
+      - "--storageDataPath=/vmetrics-data"
+
+  prometheus-mock:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"

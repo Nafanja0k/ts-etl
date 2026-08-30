@@ -1,0 +1,25 @@
+source_id: "apps_splunk_o11y"
+source_type: "splunk_o11y"
+description: "Map Splunk Observability Cloud APM datapoints to canonical HTTP metrics"
+rules:
+  - source_metric: "http.requests.total"
+    target_metric: "http.server.requests"
+    signal_flow_program: 'data("http.requests.total", filter=filter("service", "*")).sum(by=["status", "path", "service", "sf_environment", "http_method"]).publish()'
+    dimension_mappings:
+      status: "http.response.status_code"
+      path: "http.route"
+      service: "service.name"
+      sf_environment: "deployment.environment"
+      http_method: "http.request.method"
+    static_dimensions:
+      "source.system": "splunk-o11y"
+    drop_tags:
+      - "sf_metric"
+      - "sf_originatingMetric"
+      - "client_ip"
+      - "trace_id"
+      - "sf_schema"
+      - "span_id"
+    unit_conversion:
+      operation: "none"
+      multiplier: 1.0

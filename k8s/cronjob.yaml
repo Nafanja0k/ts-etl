@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: telemetry-etl-orchestrator
+  namespace: observability
+spec:
+  # Trigger every 5 minutes for ephemeral container execution
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid  # In addition to S3 lease lock
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 600
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: etl-runner
+              image: registry.internal/observability/telemetry-etl:latest
+              args:
+                - "--s3-bucket"
+                - "corp-o11y-telemetry-state"
+                - "--target-tsdb"
+                - "http://victoriametrics.monitoring.svc:8428/api/v1/write"
+              env:
+                - name: AWS_REGION
+                  value: "us-east-1"
+                - name: SPLUNK_ACCESS_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: splunk-credentials
+                      key: token
+              resources:
+                requests:
+                  cpu: "250m"
+                  memory: "256Mi"
+                limits:
+                  cpu: "1000m"
+                  memory: "512Mi"

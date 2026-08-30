@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package prometheus;
+
+import "types.proto";
+
+message WriteRequest {
+  repeated TimeSeries timeseries = 1;
+  // Metadata can optionally be included
+}

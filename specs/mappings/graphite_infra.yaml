@@ -1,0 +1,18 @@
+source_id: "legacy_graphite_host_memory"
+source_type: "graphite"
+description: "Parse Graphite dot-notation paths (servers.<datacenter>.<host>.<service>.memory.percent_used) into target dimensions"
+rules:
+  - source_pattern: "servers.*.*.*.memory.percent_used"
+    target_metric: "system.memory.utilization"
+    summarize_function: "average"
+    dot_path_positions:
+      1: "cloud.region"
+      2: "host.name"
+      3: "service.name"
+    static_dimensions:
+      "deployment.environment": "production"
+      "source.system": "graphite"
+    unit_conversion:
+      operation: "percentage_to_ratio"
+      divider: 100.0
+      description: "Convert 0-100% memory usage to 0.0-1.0 ratio"

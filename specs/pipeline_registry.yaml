@@ -1,0 +1,32 @@
+version: "1.0"
+jobs:
+  - job_id: "infra_k8s_prometheus"
+    name: "Kubernetes Node & Cluster Infrastructure"
+    source_type: "prometheus"
+    source_url: "http://prometheus.internal:9090"
+    chunk_minutes: 15
+    query_delay_minutes: 10
+    downsample_resolution: "1m"
+    mapping_spec: "specs/mappings/k8s_prom.yaml"
+    target_metric: "system.cpu.utilization"
+
+  - job_id: "apps_splunk_o11y"
+    name: "Enterprise Microservices APM & HTTP"
+    source_type: "splunk_o11y"
+    realm: "us0"
+    api_token_env: "SPLUNK_ACCESS_TOKEN"
+    chunk_minutes: 60
+    query_delay_minutes: 15
+    downsample_resolution: "5m"
+    mapping_spec: "specs/mappings/splunk_apps.yaml"
+    target_metric: "http.server.requests"
+
+  - job_id: "legacy_graphite_host_memory"
+    name: "Legacy Bare-Metal Infrastructure (Graphite)"
+    source_type: "graphite"
+    source_url: "http://graphite.internal:8080"
+    chunk_minutes: 30
+    query_delay_minutes: 10
+    downsample_resolution: "2m"
+    mapping_spec: "specs/mappings/graphite_infra.yaml"
+    target_metric: "system.memory.utilization"
