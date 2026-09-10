@@ -1,4 +1,4 @@
-# Nobl9-Inspired Stateless Telemetry ETL & Backfill Engine
+# Inspired Stateless Telemetry ETL & Backfill Engine
 
 An enterprise-grade, stateless, pull-based Telemetry ETL & Backfill Engine designed for serverless containers (Kubernetes CronJobs, AWS ECS Fargate, GCP Cloud Run). Inspired by the **Nobl9 Agent pull architecture**, this engine executes scheduled ephemeral runs without requiring persistent database infrastructure. It uses **Amazon S3 / Google Cloud Storage** for distributed lease locking, monotonic low-watermark state tracking, and dead-letter quarantine.
 
